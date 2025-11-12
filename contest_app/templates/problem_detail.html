@@ -178,9 +178,9 @@ document.getElementById("run-btn").addEventListener("click", async ()=> {
                     <div>
                         <strong style="color:${typeColor}">${escapeHtml(r.type)} Test:</strong>
                         <span style="color:${statusColor}">${escapeHtml(r.status)}</span>
-                        <pre>Input: ${escapeHtml(r.input)}</pre>
-                        <pre>Output: ${escapeHtml(r.output??'')}</pre>
-                        ${r.expected? `<pre>Expected: ${escapeHtml(r.expected)}</pre>` : ""}
+                        <pre style="color:#00ffff;">Input: ${escapeHtml(r.input)}</pre>
+                        <pre style="color:#7CFC00;">Output: ${escapeHtml(r.output??'')}</pre>
+                        ${r.expected? `<pre style="color:#FFA500;">Expected: ${escapeHtml(r.expected)}</pre>` : ""}
                         <hr>
                     </div>`;
             }).join("");
