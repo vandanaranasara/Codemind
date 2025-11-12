@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-info fw-bold mb-4 text-center">Coding Problems</h2>
+  <table class="table table-hover table-bordered shadow">
+    <thead class="table-info">
+      <tr>
+        <th>Title</th>
+        <th>Time Limit</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for problem in problems %}
+      <tr>
+        <td>{{ problem.title }}</td>
+        <td>{{ problem.time_limit }}</td>
+        <td>
+          {% comment %} {% if request.session.user %}
+          <a href="{% url 'problem_detail' problem.pk %}?start_timer=1" class="btn btn-sm btn-primary start-btn" data-problem-id="{{ problem.pk }}">Start</a>
+          
+          {% comment %} {% else %}
+          <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Start</a>
+          {% endif %} {% endcomment %} 
+
+          {% if request.COOKIES.access_token %}
+          <!-- User is logged in -->
+              <a href="{% url 'problem_detail' problem.pk %}?start_timer=1" class="btn btn-sm btn-primary start-btn" data-problem-id="{{ problem.pk }}">Start</a>
+          {% else %}
+          <!-- User not logged in -->
+              <a href="{% url 'login' %}" class="btn  btn-smbtn-primary">Start</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center text-muted">No problems added yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

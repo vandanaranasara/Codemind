@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="home-section" style="padding: 60px 0; background-color: #f7f9fb; text-align: center;">
+<div class="container text-center mt-5">
+  <div class="jumbotron bg-info text-white shadow-lg rounded p-5">
+    <h1 class="display-4 fw-bold">Welcome to <span class="text-dark">CODEMIND</span></h1>
+    <p class="lead mt-3">
+      Join exciting coding contests, challenge your skills, and compete with the best minds.
+    </p>
+    <a href="{% url 'signup' %}" class="btn btn-light btn-lg mt-3 text-info fw-bold">
+      Get Started
+    </a>
+  </div>
+
+  <!-- Contest Card -->
+  <h2 class="text-info fw-bold my-5">Upcoming Contests</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-4 mb-4">
+      <div class="card border-info shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-info fw-bold">Python Mastery Challenge</h5>
+          <p class="card-text">Solve tricky Python problems and boost your ranking.</p>
+          {% if request.session.user%}
+          <a href="{% url 'problem_list' %}" class="btn btn-outline-info">Participate</a>
+          {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline-info">Participate</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Problem Details -->
+    <div class="col-md-5 mb-4">
+      <div class="card shadow-sm border-info h-120">
+        <div class="card-body">
+          <h2 class="text-info fw-bold">{{ problem.title }}</h2>
+          <hr>
+          <p><strong>Description:</strong></p>
+          <p>{{ problem.description|linebreaks }}</p>
+
+          <div class="mt-4">
+            <h5 class="text-secondary">Sample Input</h5>
+            <pre class="bg-light p-3 rounded">{{ problem.sample_input }}</pre>
+
+            <h5 class="text-secondary">Sample Output</h5>
+            <pre class="bg-light p-3 rounded">{{ problem.sample_output }}</pre>
+
+            <h5 class="text-secondary mt-4">Time Limit: {{ problem.time_limit }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Editor & Timer -->
+    <div class="col-md-7">
+      <div class="card shadow-sm border-info h-100">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col">
+              <h4 class="text-info fw-bold">Code Editor (Python)</h4>
+            </div>
+            <div class="col text-end">
+              <div class="d-inline-flex align-items-center border rounded p-2 bg-light" style="min-width:160px;">
+                <input type="hidden" id="problem-time-limit" value="{{ problem.time_limit }}">
+                <button id="start-timer-btn" class="btn btn-info" style="width:40px; height:40px; padding:0">⏱</button>
+                <input type="text" id="timerInput" class="form-control text-center" placeholder="00:00:00" readonly style="width:100px;"/>
+              </div>
+            </div>
+          </div>
+
+          <textarea id="editor"></textarea>
+
+          <div class="text-center mt-4">
+            <button id="run-btn" class="btn btn-success px-4 py-2">Run Code</button>
+            <button id="submit-btn" class="btn btn-primary px-4 py-2">Submit</button>
+          </div>
+
+          <div class="mt-4">
+            <h5 class="text-info">Output:</h5>
+            <pre id="output" class="bg-dark text-light p-3 rounded" style="min-height: 120px;">Your output will appear here...</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CodeMirror -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/matchbrackets.min.js"></script>
+
+<script>
+var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+  mode: "python",
+  theme: "dracula",
+  lineNumbers: true,
+  matchBrackets: true,
+  indentUnit: 4,
+  autoCloseBrackets: true,
+  styleActiveLine: true,
+  lineWrapping: true,
+  extraKeys: {"Ctrl-Space": "autocomplete"}
+});
+editor.setSize("100%", "400px");
+editor.setValue(`# Write your Python code here\nprint("Hello, CodeMind!")`);
+const problemId = "{{ problem.id }}";
+
+// Timer variables
+window.totalSeconds = 0;
+window.timerInterval = null;
+
+// Parse problem time limit
+let timeLimitInput = document.getElementById("problem-time-limit").value || "0";
+let timeLimitSeconds = 0;
+
+if(timeLimitInput.includes(":")) {
+    const parts = timeLimitInput.split(":").map(p => parseInt(p, 10));
+    if(parts.length === 3) timeLimitSeconds = parts[0]*3600 + parts[1]*60 + parts[2];
+    else if(parts.length === 2) timeLimitSeconds = parts[0]*60 + parts[1];
+} else {
+    timeLimitSeconds = parseInt(timeLimitInput, 10)*60;
+}
+window.timeLimitSeconds = timeLimitSeconds;
+
+// Timer function
+function startTimer() {
+    if(window.timerInterval) return;
+    const timerInput = document.getElementById("timerInput");
+    const runBtn = document.getElementById("run-btn");
+
+    window.timerInterval = setInterval(() => {
+        window.totalSeconds++;
+        let hours = String(Math.floor(window.totalSeconds/3600)).padStart(2,'0');
+        let minutes = String(Math.floor((window.totalSeconds%3600)/60)).padStart(2,'0');
+        let seconds = String(window.totalSeconds%60).padStart(2,'0');
+        timerInput.value = `${hours}:${minutes}:${seconds}`;
+
+        if(window.timeLimitSeconds > 0 && window.totalSeconds >= window.timeLimitSeconds){
+            clearInterval(window.timerInterval);
+            timerInput.value = "Time's up!";
+            runBtn.disabled = true;
+            alert("⏰ Time limit reached!");
+        }
+    }, 1000);
+}
+
+// Auto-start & start button
+document.addEventListener("DOMContentLoaded", function() {
+    const startBtn = document.getElementById("start-timer-btn");
+    if(startBtn) startBtn.addEventListener("click", startTimer);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('start_timer') === "1") startTimer();
+});
+
+// CSRF helper
+function getCookie(name){
+    let cookieValue = null;
+    if(document.cookie && document.cookie !== ""){
+        document.cookie.split(";").forEach(c => {
+            c = c.trim();
+            if(c.startsWith(name+"=")) cookieValue = decodeURIComponent(c.substring(name.length+1));
+        });
+    }
+    return cookieValue;
+}
+
+// Escape HTML
+function escapeHtml(unsafe){
+    if(!unsafe) return "";
+    return String(unsafe).replace(/&/g,"&amp;")
+                         .replace(/</g,"&lt;")
+                         .replace(/>/g,"&gt;")
+                         .replace(/"/g,"&quot;")
+                         .replace(/'/g,"&#039;");
+}
+
+// Run code button
+document.getElementById("run-btn").addEventListener("click", async ()=> {
+    const code = editor.getValue();
+    const outputBox = document.getElementById("output");
+    outputBox.innerText = "⏳ Running your code...";
+    if(!code.trim()){ outputBox.innerText = "Please write some code before running."; return; }
+
+    try {
+        const response = await fetch("{% url 'run_code' %}", {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({code: code, problem_id: problemId}),
+            credentials: "include"
+        });
+
+        const data = await response.json();
+        if(data.results){
+            let html = data.results.map(r=>{
+                let statusColor = r.status==="Passed"?"lightgreen":(r.status==="Timeout"?"orange":"salmon");
+                let typeColor = r.type==="Hidden"?"#FFD700":"#00BFFF";
+                return `
+                    <div>
+                        <strong style="color:${typeColor}">${escapeHtml(r.type)} Test:</strong>
+                        <span style="color:${statusColor}">${escapeHtml(r.status)}</span>
+                        <pre>Input: ${escapeHtml(r.input)}</pre>
+                        <pre>Output: ${escapeHtml(r.output??'')}</pre>
+                        ${r.expected? `<pre>Expected: ${escapeHtml(r.expected)}</pre>` : ""}
+                        <hr>
+                    </div>`;
+            }).join("");
+            outputBox.innerHTML = html + `<div><strong>Final Score:</strong> ${escapeHtml(String(data.score))}</div>`;
+        } else if(data.error){
+            outputBox.innerText = data.error;
+        } else {
+            outputBox.innerText = "No output.";
+        }
+
+    } catch(err){
+        console.error(err);
+        outputBox.innerText = "Error connecting to server.";
+    }
+});
+
+// Submit button
+document.getElementById("submit-btn").addEventListener("click", async ()=>{
+    const code = editor.getValue();
+    const outputBox = document.getElementById("output");
+    if(!code.trim()){ outputBox.innerText = "Please write some code before submitting."; return; }
+
+    console.log("Submitting time_taken:", window.totalSeconds);
+
+    try {
+        const response = await fetch("{% url 'submit_code' %}", {
+            method:"POST",
+            credentials:"include",
+            headers:{
+                "Content-Type":"application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({
+                code: code,
+                problem_id: problemId,
+                time_taken: window.totalSeconds
+            })
+        });
+
+        const data = await response.json();
+        if(data.success){
+            alert("Submission recorded!");
+            window.location.href = `/leaderboard/${problemId}/`;
+        } else {
+            outputBox.innerText = data.error || "Submission failed.";
+        }
+
+    } catch(err){
+        console.error(err);
+        outputBox.innerText = "Error connecting to server.";
+    }
+});
+</script>
+{% endblock %}
+
+
+
