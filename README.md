@@ -22,13 +22,12 @@ CodeMind is an online platform designed specifically for Python programming cont
 
 ### Admin Features
 
-- **Contest Management:** Admins have full control over the contest page. They can:
+- **Contest Management:** Admins have full control over contests, including:
 
-- Create new contests
+  - Creating new contests
+  - Updating existing contests
+  - Deleting contests
 
-- Update existing contests
-
-- Delete contests
 
 
 # 🛠️ Tech Stack
