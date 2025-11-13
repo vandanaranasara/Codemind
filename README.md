@@ -30,7 +30,6 @@ CodeMind is an online platform designed specifically for Python programming cont
 
 - Delete contests
 
-- **Leaderboard Monitoring:** Admins can monitor contest submissions and performance rankings.
 
 # 🛠️ Tech Stack
 
