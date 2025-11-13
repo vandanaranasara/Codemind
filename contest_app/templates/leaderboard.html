@@ -20,9 +20,9 @@
                     {% else %}{{ forloop.counter }}
                     {% endif %}
                 </td>
-                {% comment %} <td>{{ entry.user.first_name|default:entry.user.email }}</td> {% endcomment %}
-                {% comment %} <td>{{ entry.user.first_name }} {{ entry.user.last_name|default:entry.user.email }}</td> {% endcomment %}
-                <td>{{ entry.user.first_name }} {{ entry.user.last_name }}[{{ entry.user.email }}]</td>
+                <td>
+                    {{ entry.user.first_name }} {{ entry.user.last_name }}[{{ entry.user.email }}]
+                </td>
 
 
                 <td>
@@ -44,39 +44,3 @@
 {% endblock %}
 
 
-{% comment %} {% extends 'base.html' %}
-{% block content %}
-<div class="container mt-5">
-    <h2 class="text-info text-center mb-4">Leaderboard: {{ problem.title }}</h2>
-    <table class="table table-hover table-bordered shadow">
-        <thead class="table-info">
-            <tr>
-                <th>Rank</th>
-                <th>User</th>
-                <th>Time Taken</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in entries %}
-            <tr>
-                <td>
-                    {% if forloop.counter == 1 %}🥇
-                    {% elif forloop.counter == 2 %}🥈
-                    {% elif forloop.counter == 3 %}🥉
-                    {% else %}{{ forloop.counter }}
-                    {% endif %}
-                </td>
-                <td>{{ entry.user.username|default:"Anonymous" }}</td>
-                <td>{{ entry.hours|stringformat:"02d" }}:{{ entry.minutes|stringformat:"02d" }}:{{ entry.seconds|stringformat:"02d" }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center text-muted">No submissions yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
-
- {% endcomment %}

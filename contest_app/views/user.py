@@ -37,10 +37,13 @@ def signup(request):
 
         user = User.objects.create_user(email=email, first_name=firstname, last_name=lastname, phone=phone, password=password)
 
-        tokens = get_tokens_for_user(user)
+        # tokens = get_tokens_for_user(user)
+        # response = redirect('home')
+        # response.set_cookie('access_token', tokens['access'])
+        # response.set_cookie('refresh_token', tokens['refresh'])
+        # return response
+        
         response = redirect('home')
-        response.set_cookie('access_token', tokens['access'])
-        response.set_cookie('refresh_token', tokens['refresh'])
         return response
 
     return render(request, 'signup.html')
@@ -52,8 +55,6 @@ def login_view(request):
         password = request.POST.get('password')
         values = {'email': email}
 
-        # user = authenticate(request, email=email, password=password)
-        # user = authenticate(request, username=email, password=password)
         user = authenticate(request, email=email, password=password)
 
 

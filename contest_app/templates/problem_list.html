@@ -16,19 +16,13 @@
         <td>{{ problem.title }}</td>
         <td>{{ problem.time_limit }}</td>
         <td>
-          {% comment %} {% if request.session.user %}
-          <a href="{% url 'problem_detail' problem.pk %}?start_timer=1" class="btn btn-sm btn-primary start-btn" data-problem-id="{{ problem.pk }}">Start</a>
-          
-          {% comment %} {% else %}
-          <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Start</a>
-          {% endif %} {% endcomment %} 
 
           {% if request.COOKIES.access_token %}
           <!-- User is logged in -->
               <a href="{% url 'problem_detail' problem.pk %}?start_timer=1" class="btn btn-sm btn-primary start-btn" data-problem-id="{{ problem.pk }}">Start</a>
           {% else %}
           <!-- User not logged in -->
-              <a href="{% url 'login' %}" class="btn  btn-smbtn-primary">Start</a>
+              <a href="{% url 'login' %}" class="btn btn-sm btn-primary start-btn">Start</a>
           {% endif %}
         </td>
       </tr>

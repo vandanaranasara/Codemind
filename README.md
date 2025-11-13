@@ -37,7 +37,7 @@ CodeMind is an online platform designed specifically for Python programming cont
 - **Backend:** Django (Python Framework)  
 - **Programming Language:** Python
 - **Database:** PostgreSQL
-- **Other Tools:** Django Admin, Docker etc.
+- **Other Tools:** Django Admin, JWT, Docker etc.
 
 
 ## 📂 Folder Structure
