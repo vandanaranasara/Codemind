@@ -2,13 +2,24 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from contest_app.models import UserManager, User
 from rest_framework_simplejwt.tokens import RefreshToken
-
-
+import jwt
+from django.conf import settings
 
 def home(request):
     is_logged_in = 'access_token' in request.COOKIES
-    return render(request, 'home.html', {'is_logged_in': is_logged_in})
+    is_admin = False
 
+    token = request.COOKIES.get('access_token')
+    if token:
+        try:
+            decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            user_id = decoded.get('user_id')
+            user = User.objects.get(id=user_id)
+            is_admin = user.is_admin
+        except Exception:
+            pass
+
+    return render(request, 'home.html', {'is_logged_in': is_logged_in, 'is_admin': is_admin})
 
 
 def get_tokens_for_user(user):
